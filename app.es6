@@ -1,6 +1,6 @@
 var huff = { };
 
-(function(){
+(function() {
 	'use strict';
 
 	huff.encode = function*(data) {
@@ -43,16 +43,21 @@ var huff = { };
 				symbols[symbol]++;
 		}
 
+		var nodeCounter = 0;
+
 		// reverse symbol table
 		var tree = [ ];
 		for(let symbol of Object.keys(symbols)) {
 			if(symbols.hasOwnProperty(symbol)){
 				tree.push({
 					weight: symbols[symbol],
-					children: symbol
+					children: symbol,
+					id: nodeCounter
 				});
+				nodeCounter++;
 			}
 		}
+		yield tree;
 
 		// combine two nodes at a time to one until there is only one node left
 		while(tree.length > 1) {
@@ -61,8 +66,10 @@ var huff = { };
 			tree.splice(smallestPairIndices[1], 1);
 			tree.splice(smallestPairIndices[0], 1, {
 				weight: nodePair[0].weight + nodePair[1].weight,
-				children: nodePair
+				children: nodePair,
+				id: nodeCounter
 			});
+			nodeCounter++;
 
 			// yield after each node merge
 			yield tree;
